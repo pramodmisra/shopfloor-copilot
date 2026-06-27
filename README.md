@@ -9,15 +9,17 @@ When a machine acts up, the operator's options are: flag down a busy maintenance
 
 ## What it does
 An operator types what they see — *"Line 3 conveyor grinding at the drive end, smells like burning."* ShopFloor Copilot:
-1. **Reads the equipment manual** and diagnoses the probable root cause(s) with confidence + the manual section that supports each.
-2. **Looks up the required spare parts** and reports real stock / lead time from the MRO catalog.
-3. **Pulls the matching OSHA lockout/tagout (LOTO) procedure** so the safety steps come first.
-4. **Emits a structured work order**: severity, ordered repair steps, parts, safety steps, downtime estimate, and an escalation flag.
+1. **Checks asset history** and flags **recurring failures** ("bearing 3× in 8 weeks → fix the root cause, not another swap").
+2. **Reads the equipment manual** and diagnoses probable root cause(s) with confidence + the manual section that supports each.
+3. **Looks up spare parts** — real stock / lead time from the MRO catalog.
+4. **Pulls the matching OSHA lockout/tagout (LOTO) procedure** so safety steps come first (sourced from the facility procedure, not invented).
+5. **Dollarizes the impact** — labor + parts + downtime cost (the burning-smell case = ~$274K exposure).
+6. **Emits a structured work order + CMMS-ready payload** (Fiix/UpKeep shape) — one-click export / "Create in Fiix," supervisor sign-off required.
 
-Every run shows its work — the collapsible agent-reasoning trace exposes each tool call.
+**Works on your equipment:** upload your own manual PDF → **LlamaParse** makes it the agent's knowledge base (demo includes diagnosing a hydraulic press from an uploaded manual). Every run shows its work — a collapsible reasoning trace of each tool call.
 
 ## Tech stack
-FastAPI · Anthropic Claude (`claude-sonnet-4-6`) agentic tool-use loop · Pydantic · vanilla JS single-page UI. One service, deployable on Railway.
+FastAPI · Anthropic Claude (`claude-sonnet-4-6`) agentic tool-use loop (4 tools, strict structured output) · **LlamaParse** (manual ingestion) · Pydantic · vanilla JS single-page UI. One service, deployable on Railway.
 
 ## Quick start
 ```bash

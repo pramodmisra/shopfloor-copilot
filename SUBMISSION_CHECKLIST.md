@@ -6,11 +6,11 @@
 - [ ] **Project name:** ShopFloor Copilot
 - [ ] **Tagline:** The maintenance work-order agent — operator types the fault; it reads the manual, diagnoses, checks parts & safety, writes the work order in 20s.
 - [ ] **Description:** paste from `DEVPOST.md` (Inspiration → What it does → How we built it → Challenges → Accomplishments → What we learned → What's next).
-- [ ] **Built with:** Python, FastAPI, Anthropic Claude (claude-sonnet-4-6), Pydantic, JavaScript, Railway.
+- [ ] **Built with:** Python, FastAPI, Anthropic Claude (claude-sonnet-4-6), LlamaParse (LlamaCloud), Pydantic, JavaScript, Railway.
 - [x] **Try it / live demo URL:** https://shopfloor-copilot-production.up.railway.app
 - [x] **Public code repo URL:** https://github.com/pramodmisra/shopfloor-copilot
 - [ ] **Demo video:** record from `DEMO_SCRIPT.md` (~2 min), upload to YouTube (unlisted is fine), paste link.
-- [ ] **Screenshots:** (1) work-order card for the burning-smell fault; (2) expanded agent-reasoning trace; (3) the input screen with demo chips.
+- [ ] **Screenshots:** (1) work-order card showing the 🔁 recurring-failure banner + $274K cost panel; (2) safety/sign-off + "Create in Fiix" buttons; (3) expanded agent-reasoning trace (history → parts → safety); (4) the uploaded-manual diagnosis (press).
 - [ ] **Theme/category:** AI agents that solve a real operational problem (Operational Intelligence).
 
 ## Pre-submit verification

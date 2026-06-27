@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ShopFloor Copilot — Maintenance Work-Order Agent</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2230; --panel2: #222c3c; --line: #2e3a4d;
+    --ink: #e7edf5; --mut: #93a1b5; --accent: #ff8a3d; --ok: #3ad29f;
+    --warn: #ffcc4d; --bad: #ff5d5d; --blue: #5aa9ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 22px 24px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 14px; background: var(--panel); }
+  header .logo { font-size: 26px; }
+  header h1 { font-size: 19px; margin: 0; font-weight: 650; }
+  header p { margin: 2px 0 0; color: var(--mut); font-size: 13px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--mut); margin-bottom: 6px; }
+  textarea { width: 100%; min-height: 96px; resize: vertical; background: var(--panel2);
+    color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 11px; font: inherit; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
+  .chip { background: var(--panel2); border: 1px solid var(--line); color: var(--mut);
+    border-radius: 999px; padding: 6px 12px; font-size: 12.5px; cursor: pointer; }
+  .chip:hover { border-color: var(--accent); color: var(--ink); }
+  button.go { margin-top: 14px; width: 100%; background: var(--accent); color: #11161d;
+    border: 0; border-radius: 9px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  button.go:disabled { opacity: .55; cursor: progress; }
+  .muted { color: var(--mut); font-size: 13px; }
+  .wo h2 { margin: 0 0 4px; font-size: 17px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .sev-emergency { background: rgba(255,93,93,.16); color: var(--bad); }
+  .sev-urgent { background: rgba(255,204,77,.16); color: var(--warn); }
+  .sev-routine { background: rgba(58,210,159,.16); color: var(--ok); }
+  .sec { margin-top: 16px; }
+  .sec h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--mut); margin: 0 0 8px; }
+  ol, ul { margin: 0; padding-left: 20px; }
+  ol li, ul li { margin-bottom: 5px; }
+  .cause { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px; margin-bottom: 8px; }
+  .conf { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 5px; }
+  .conf-high { background: rgba(58,210,159,.16); color: var(--ok); }
+  .conf-medium { background: rgba(255,204,77,.16); color: var(--warn); }
+  .conf-low { background: rgba(147,161,181,.16); color: var(--mut); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--mut); font-weight: 600; font-size: 12px; }
+  .safety { border-left: 3px solid var(--bad); padding-left: 12px; }
+  details.trace { margin-top: 18px; }
+  details.trace summary { cursor: pointer; color: var(--blue); font-size: 13.5px; }
+  .step { font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12.5px;
+    background: var(--panel2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 8px 10px; margin-top: 7px; white-space: pre-wrap; word-break: break-word; }
+  .step .k { color: var(--accent); }
+  .meta { color: var(--mut); font-size: 12px; margin-top: 10px; }
+  .empty { color: var(--mut); text-align: center; padding: 40px 10px; }
+  .esc { margin-top: 12px; background: rgba(90,169,255,.1); border: 1px solid var(--blue);
+    border-radius: 8px; padding: 10px; font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🛠️</div>
+  <div>
+    <h1>ShopFloor Copilot</h1>
+    <p>Plain-language fault → diagnosed, safety-compliant maintenance work order</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+    <div class="card">
+      <label for="fault">Operator fault report</label>
+      <textarea id="fault" placeholder="e.g. Line 3 conveyor grinding near the drive end, smells like burning..."></textarea>
+      <div class="chips" id="chips"><span class="muted">loading demo faults…</span></div>
+      <button class="go" id="go">Diagnose &amp; build work order</button>
+      <p class="muted" style="margin-top:10px">Asset: <strong>CONV-L3</strong> · ConvTech CT-2000 packaging conveyor</p>
+    </div>
+
+    <div class="card" id="out">
+      <div class="empty">The work order appears here.<br>Pick a demo fault or type your own, then hit Diagnose.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const faultEl = $("#fault"), outEl = $("#out"), goEl = $("#go");
+
+fetch("/api/samples").then(r => r.json()).then(d => {
+  const c = $("#chips"); c.innerHTML = "";
+  d.faults.forEach(f => {
+    const b = document.createElement("span");
+    b.className = "chip"; b.textContent = f.text.slice(0, 46) + "…";
+    b.title = f.text;
+    b.onclick = () => { faultEl.value = f.text; };
+    c.appendChild(b);
+  });
+}).catch(() => { $("#chips").innerHTML = '<span class="muted">demo faults unavailable</span>'; });
+
+goEl.onclick = async () => {
+  const fault = faultEl.value.trim();
+  if (fault.length < 3) { faultEl.focus(); return; }
+  goEl.disabled = true; goEl.textContent = "Agent working… (reading manual, checking parts & safety)";
+  outEl.innerHTML = '<div class="empty">⚙️ Diagnosing…</div>';
+  try {
+    const r = await fetch("/api/diagnose", {
+      method: "POST", headers: {"content-type": "application/json"},
+      body: JSON.stringify({ fault, asset: "CONV-L3" })
+    });
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    render(await r.json());
+  } catch (e) {
+    outEl.innerHTML = '<div class="empty">⚠️ ' + e.message + '</div>';
+  } finally {
+    goEl.disabled = false; goEl.textContent = "Diagnose & build work order";
+  }
+};
+
+function esc(s){ return (s||"").replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+function render(d) {
+  const w = d.work_order;
+  const causes = w.probable_causes.map(c =>
+    `<div class="cause"><span class="conf conf-${c.confidence}">${c.confidence.toUpperCase()}</span>
+     <strong> ${esc(c.cause)}</strong><div class="muted" style="margin-top:4px">${esc(c.evidence)}</div></div>`).join("");
+  const parts = w.required_parts.length ? w.required_parts.map(p =>
+    `<tr><td><code>${esc(p.part_number)}</code></td><td>${esc(p.name)}</td><td>${esc(p.availability)}</td></tr>`).join("")
+    : '<tr><td colspan="3" class="muted">No parts required.</td></tr>';
+  const steps = arr => arr.map(s => `<li>${esc(s)}</li>`).join("");
+  const traceHtml = d.trace.map(t =>
+    `<div class="step"><span class="k">${t.kind}</span> · ${esc(t.label)}${
+      t.detail ? "\n" + esc(typeof t.detail === "string" ? t.detail : JSON.stringify(t.detail)) : ""}</div>`).join("");
+
+  outEl.innerHTML = `
+    <div class="wo">
+      <h2>Work Order <span class="muted">${esc(w.work_order_id)}</span></h2>
+      <span class="badge sev-${w.severity}">${w.severity.toUpperCase()}</span>
+      <span class="muted"> · ${esc(w.asset)} · est. downtime ${esc(w.estimated_downtime)}</span>
+      <div class="sec"><h3>Reported symptom</h3><div>${esc(w.reported_symptom)}</div></div>
+      <div class="sec"><h3>Probable root cause</h3>${causes}</div>
+      <div class="sec"><h3>⚠️ Safety — lockout/tagout first</h3><ol class="safety">${steps(w.safety_steps)}</ol></div>
+      <div class="sec"><h3>Repair steps</h3><ol>${steps(w.repair_steps)}</ol></div>
+      <div class="sec"><h3>Required parts</h3><table>
+        <tr><th>Part #</th><th>Description</th><th>Availability</th></tr>${parts}</table></div>
+      ${w.escalate ? `<div class="esc"><strong>Escalate:</strong> ${esc(w.escalation_reason||"")}</div>` : ""}
+      <details class="trace"><summary>Show agent reasoning (${d.trace.length} steps, ${d.model})</summary>${traceHtml}</details>
+      <div class="meta">Completed in ${d.elapsed_seconds}s · ${esc(d.model)}</div>
+    </div>`;
+}
+</script>
+</body>
+</html>

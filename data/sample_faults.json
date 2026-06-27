@@ -1,0 +1,25 @@
+{
+  "_comment": "One-click demo fault reports an operator might type or dictate at the line.",
+  "faults": [
+    {
+      "id": "demo-1",
+      "asset": "CONV-L3",
+      "text": "Line 3 conveyor is making a loud grinding noise near the drive end and I smell something burning. Belt is still moving but it sounds rough."
+    },
+    {
+      "id": "demo-2",
+      "asset": "CONV-L3",
+      "text": "Line 3 belt keeps drifting to one side and rubbing the frame. It tracked fine yesterday. No weird noises."
+    },
+    {
+      "id": "demo-3",
+      "asset": "CONV-L3",
+      "text": "Conveyor on line 3 won't start. The motor hums for a second then the overload trips. Reset it twice, same thing."
+    },
+    {
+      "id": "demo-4",
+      "asset": "CONV-L3",
+      "text": "Boxes are slipping on the incline and the belt is squealing on startup. Production is backing up at the labeler."
+    }
+  ]
+}

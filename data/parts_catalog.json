@@ -1,0 +1,20 @@
+{
+  "_comment": "Seeded MRO (maintenance, repair, operations) parts catalog for the demo packaging line. Stock and lead-time values are illustrative.",
+  "parts": [
+    {"part_number": "BLT-V-A42", "name": "Drive belt, A-section V-belt (Line 3 conveyor main drive)", "on_hand_qty": 4, "lead_time_days": 0, "unit_cost_usd": 38.50, "bin": "MRO-A-12", "fits_assets": ["CONV-L3", "CONV-L2"]},
+    {"part_number": "BRG-6204-2RS", "name": "Sealed ball bearing 6204-2RS (idler/head pulley)", "on_hand_qty": 6, "lead_time_days": 0, "unit_cost_usd": 14.25, "bin": "MRO-A-07", "fits_assets": ["CONV-L3", "CONV-L1", "CONV-L2"]},
+    {"part_number": "BRG-6206-2RS", "name": "Sealed ball bearing 6206-2RS (drive pulley)", "on_hand_qty": 0, "lead_time_days": 3, "unit_cost_usd": 22.80, "bin": "MRO-A-08", "fits_assets": ["CONV-L3"]},
+    {"part_number": "MTR-2HP-56C", "name": "Gearmotor 2HP 56C 230/460V (conveyor drive)", "on_hand_qty": 1, "lead_time_days": 7, "unit_cost_usd": 615.00, "bin": "MRO-C-01", "fits_assets": ["CONV-L3"]},
+    {"part_number": "OVL-RLY-9A", "name": "Thermal overload relay, 7-10A class 10", "on_hand_qty": 2, "lead_time_days": 0, "unit_cost_usd": 71.40, "bin": "ELEC-B-03", "fits_assets": ["CONV-L3", "CONV-L1", "CONV-L2"]},
+    {"part_number": "ROL-IDL-48", "name": "Idler roller, 1.9in dia x 48in BF", "on_hand_qty": 3, "lead_time_days": 2, "unit_cost_usd": 47.10, "bin": "MRO-A-15", "fits_assets": ["CONV-L3", "CONV-L2"]},
+    {"part_number": "BLT-CLN-48", "name": "Belt cleaner/scraper blade, 48in", "on_hand_qty": 5, "lead_time_days": 0, "unit_cost_usd": 33.00, "bin": "MRO-A-16", "fits_assets": ["CONV-L3", "CONV-L2"]},
+    {"part_number": "LUB-EP2-14", "name": "EP2 lithium grease, 14oz cartridge", "on_hand_qty": 24, "lead_time_days": 0, "unit_cost_usd": 8.95, "bin": "MRO-D-02", "fits_assets": ["CONV-L3", "CONV-L1", "CONV-L2"]},
+    {"part_number": "PXS-IND-18", "name": "Inductive proximity sensor 18mm PNP NO", "on_hand_qty": 2, "lead_time_days": 0, "unit_cost_usd": 54.00, "bin": "ELEC-B-11", "fits_assets": ["CONV-L3"]},
+    {"part_number": "VFD-3HP-240", "name": "Variable frequency drive 3HP 240V", "on_hand_qty": 0, "lead_time_days": 5, "unit_cost_usd": 489.00, "bin": "ELEC-C-04", "fits_assets": ["CONV-L3"]},
+    {"part_number": "FUS-CC-10", "name": "Class CC time-delay fuse, 10A", "on_hand_qty": 12, "lead_time_days": 0, "unit_cost_usd": 4.10, "bin": "ELEC-B-01", "fits_assets": ["CONV-L3", "CONV-L1", "CONV-L2"]},
+    {"part_number": "CPL-JAW-L095", "name": "Jaw coupling L095 with spider insert", "on_hand_qty": 2, "lead_time_days": 1, "unit_cost_usd": 28.75, "bin": "MRO-A-20", "fits_assets": ["CONV-L3"]},
+    {"part_number": "SHIM-SS-KIT", "name": "Stainless shim kit (motor alignment)", "on_hand_qty": 3, "lead_time_days": 0, "unit_cost_usd": 19.50, "bin": "MRO-D-09", "fits_assets": ["CONV-L3", "CONV-L1", "CONV-L2"]},
+    {"part_number": "TKN-LACE-A1", "name": "Belt lacing/clipper kit (alligator A1)", "on_hand_qty": 1, "lead_time_days": 0, "unit_cost_usd": 62.30, "bin": "MRO-A-18", "fits_assets": ["CONV-L3", "CONV-L2"]},
+    {"part_number": "EST-BTN-22", "name": "E-stop pushbutton, 22mm red mushroom", "on_hand_qty": 4, "lead_time_days": 0, "unit_cost_usd": 18.20, "bin": "ELEC-B-22", "fits_assets": ["CONV-L3", "CONV-L1", "CONV-L2"]}
+  ]
+}

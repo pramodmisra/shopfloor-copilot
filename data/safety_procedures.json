@@ -1,0 +1,61 @@
+{
+  "_comment": "Lockout/Tagout (LOTO) and PPE procedures keyed by hazard type. Modeled on OSHA 29 CFR 1910.147 (The Control of Hazardous Energy) and 1910.333. Illustrative for demo use; a real deployment binds to the facility's energy-control procedure.",
+  "procedures": {
+    "electrical": {
+      "hazard": "Hazardous electrical energy (shock, arc flash)",
+      "osha_ref": "29 CFR 1910.147 / 1910.333",
+      "ppe": ["Arc-rated face shield + balaclava (per incident energy)", "Class 0 insulating gloves with leather protectors", "Safety glasses", "Arc-rated long-sleeve shirt and pants"],
+      "loto_steps": [
+        "Notify all affected employees that a lockout is required and why.",
+        "Identify ALL energy sources for the asset (main disconnect, control transformer, capacitor banks).",
+        "Shut down the equipment using its normal stopping procedure.",
+        "Isolate energy: open the disconnect switch / unplug at source.",
+        "Apply your assigned lock and a durable tag to the disconnect in the OFF position.",
+        "Release/verify zero stored energy (discharge capacitors, bleed VFD DC bus).",
+        "VERIFY isolation: attempt a normal start (try-out), then meter the terminals to confirm 0V before contact.",
+        "Perform the work.",
+        "Reverse: clear tools, confirm personnel clear, remove lock/tag, restore energy, notify affected employees."
+      ]
+    },
+    "mechanical": {
+      "hazard": "Hazardous mechanical / rotating energy (pinch, entanglement, crush)",
+      "osha_ref": "29 CFR 1910.147 / 1910.219",
+      "ppe": ["Safety glasses", "Cut-resistant gloves", "No loose clothing, jewelry, or untied hair near rotating parts", "Steel-toe footwear"],
+      "loto_steps": [
+        "Notify affected employees of the planned lockout.",
+        "Stop the conveyor using the normal stop, then the local disconnect.",
+        "Apply lock and tag to the motor disconnect in the OFF position.",
+        "Block or restrain any parts that could move by gravity (incline sections, take-up counterweights).",
+        "Relieve stored mechanical energy (release belt tension at the take-up if servicing the belt).",
+        "VERIFY: attempt a normal start to confirm the drive will not energize.",
+        "Perform the work.",
+        "Reverse the sequence; confirm guards are reinstalled before restoring power."
+      ]
+    },
+    "thermal": {
+      "hazard": "Hot surfaces / overheated components (burn, fire)",
+      "osha_ref": "29 CFR 1910.147 / 1910.132",
+      "ppe": ["Heat-resistant gloves", "Safety glasses", "Class ABC fire extinguisher staged within reach"],
+      "loto_steps": [
+        "If smoke or burning smell is present, hit the E-stop immediately and evacuate the immediate area if active fire is suspected.",
+        "Do NOT touch motor housings, bearings, or brakes until verified cool or measured with a non-contact IR thermometer.",
+        "De-energize and apply lockout per the electrical procedure.",
+        "Allow components to cool to a safe handling temperature (< 120 F / 49 C).",
+        "Inspect for the heat source (seized bearing, dragging brake, overloaded motor) before restart.",
+        "Clear and document before restoring power."
+      ]
+    },
+    "general": {
+      "hazard": "General maintenance on de-energized equipment",
+      "osha_ref": "29 CFR 1910.147",
+      "ppe": ["Safety glasses", "Work gloves", "Steel-toe footwear"],
+      "loto_steps": [
+        "Notify affected employees.",
+        "Stop equipment via normal stop.",
+        "Isolate and lock/tag the primary energy source.",
+        "Verify zero energy state before contact.",
+        "Perform work; restore and notify when complete."
+      ]
+    }
+  }
+}

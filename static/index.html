@@ -70,6 +70,8 @@
   button.up { margin-top: 8px; background: var(--panel2); color: var(--ink);
     border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 13px; cursor: pointer; }
   button.up:hover { border-color: var(--blue); }
+  a.reset { color: var(--blue); text-decoration: none; }
+  a.reset:hover { text-decoration: underline; }
   .recur { margin-top: 12px; background: rgba(255,93,93,.12); border: 1px solid var(--bad);
     border-radius: 8px; padding: 10px 12px; font-size: 13px; }
   .costgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 13.5px; }
@@ -178,7 +180,7 @@
         <label>Use your own equipment manual</label>
         <input type="file" id="pdf" accept="application/pdf" />
         <button class="up" id="upbtn">Upload &amp; parse (LlamaParse)</button>
-        <p class="muted" id="manualSrc" style="margin-top:8px">Manual: seeded ConvTech CT-2000</p>
+        <p class="muted" style="margin-top:8px"><span id="manualSrc">Manual: seeded ConvTech CT-2000</span> · <a href="#" id="resetManual" class="reset">↺ reset to default</a></p>
       </div>
     </div>
 
@@ -251,6 +253,16 @@ $("#upbtn").onclick = async () => {
     $("#manualSrc").textContent = "Upload failed: " + e.message;
     $("#manualSrc").style.color = "var(--bad)";
   } finally { btn.disabled = false; btn.textContent = "Upload & parse (LlamaParse)"; }
+};
+
+$("#resetManual").onclick = async (e) => {
+  e.preventDefault();
+  try {
+    await fetch("/api/reset_manual", { method: "POST" });
+    $("#manualSrc").textContent = "Manual: seeded ConvTech CT-2000";
+    $("#manualSrc").style.color = "var(--mut)";
+    $("#pdf").value = "";
+  } catch (_) {}
 };
 
 function exportCmms() {

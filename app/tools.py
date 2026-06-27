@@ -39,6 +39,11 @@ def set_manual_override(markdown: str, source_name: str) -> None:
     _MANUAL_OVERRIDE.update({"text": markdown, "name": source_name})
 
 
+def clear_manual_override() -> None:
+    """Revert to the seeded conveyor manual (recovers from an accidental upload)."""
+    _MANUAL_OVERRIDE.clear()
+
+
 def manual_source() -> str:
     return _MANUAL_OVERRIDE.get("name", "Seeded: ConvTech CT-2000 conveyor manual")
 

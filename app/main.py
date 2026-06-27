@@ -13,7 +13,7 @@ from .agent import MODEL, run_agent
 from .cmms import to_cmms_payload
 from .llamaparse import ManualParseError, parse_pdf_to_markdown
 from .models import DiagnoseRequest, DiagnoseResponse
-from .tools import load_sample_faults, manual_source, set_manual_override
+from .tools import clear_manual_override, load_sample_faults, manual_source, set_manual_override
 
 load_dotenv()
 
@@ -60,6 +60,13 @@ async def upload_manual(file: UploadFile = File(...)) -> dict[str, object]:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     set_manual_override(markdown, f"Uploaded: {file.filename}")
     return {"ok": True, "manual_source": manual_source(), "chars": len(markdown)}
+
+
+@app.post("/api/reset_manual")
+def reset_manual() -> dict[str, object]:
+    """Revert to the seeded conveyor manual."""
+    clear_manual_override()
+    return {"ok": True, "manual_source": manual_source()}
 
 
 @app.get("/")

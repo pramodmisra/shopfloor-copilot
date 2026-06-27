@@ -2,7 +2,7 @@
 
 > Built for the Zapdos Labs **$1,000 Industrial AI Hackathon** (Operational Intelligence). Turns a frontline operator's plain-language fault report into a complete, safety-compliant maintenance work order in ~20 seconds.
 
-**Live demo:** _<add Railway URL>_ · **Theme:** AI agents that solve a real operational problem for the American Industrial Revolution.
+**Live demo:** https://shopfloor-copilot-production.up.railway.app · **Repo:** https://github.com/pramodmisra/shopfloor-copilot · **Theme:** AI agents that solve a real operational problem for the American Industrial Revolution.
 
 ## The problem
 When a machine acts up, the operator's options are: flag down a busy maintenance tech, or flip through a binder. Diagnosis and work-order paperwork eat 20–40 minutes per event, and the highest-cost mistake — restarting a faulting machine, or skipping lockout/tagout — happens under exactly that time pressure. Unplanned downtime runs ~$260K/hour in some plants.

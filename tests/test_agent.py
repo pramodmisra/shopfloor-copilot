@@ -66,4 +66,6 @@ def test_live_agent_produces_work_order() -> None:
     assert wo.severity in ("emergency", "urgent")  # burning smell -> high severity
     assert wo.safety_steps, "work order must carry safety steps"
     assert wo.probable_causes
+    assert wo.cost_impact.total_cost_usd > 0  # dollarized impact computed
+    assert wo.recurrence.is_recurring  # CONV-L3 has prior bearing failures in history
     assert any(s.kind == "tool_call" for s in trace)

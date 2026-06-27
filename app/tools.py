@@ -21,11 +21,26 @@ def _load(name: str) -> dict[str, Any]:
 
 _PARTS = _load("parts_catalog.json")["parts"]
 _SAFETY = _load("safety_procedures.json")["procedures"]
+_HISTORY = _load("asset_history.json")["history"]
+
+# Active manual: defaults to the seeded conveyor manual; an uploaded PDF overrides it.
+_MANUAL_OVERRIDE: dict[str, str] = {}
 
 
 def load_manual() -> str:
-    """The full equipment manual — cached in the system prompt."""
+    """The active equipment manual — uploaded PDF if present, else the seeded one."""
+    if _MANUAL_OVERRIDE:
+        return _MANUAL_OVERRIDE["text"]
     return (DATA_DIR / "manual_conveyor.md").read_text(encoding="utf-8")
+
+
+def set_manual_override(markdown: str, source_name: str) -> None:
+    _MANUAL_OVERRIDE.clear()
+    _MANUAL_OVERRIDE.update({"text": markdown, "name": source_name})
+
+
+def manual_source() -> str:
+    return _MANUAL_OVERRIDE.get("name", "Seeded: ConvTech CT-2000 conveyor manual")
 
 
 def load_sample_faults() -> list[dict[str, str]]:
@@ -53,6 +68,12 @@ def get_safety_procedure(hazard: str) -> str:
     key = (hazard or "general").lower().strip()
     proc = _SAFETY.get(key) or _SAFETY["general"]
     return json.dumps({"hazard_type": key, "procedure": proc})
+
+
+def lookup_asset_history(asset: str) -> str:
+    """Return recent work orders for an asset so the agent can flag recurring failures."""
+    records = _HISTORY.get((asset or "").upper().strip(), [])
+    return json.dumps({"asset": asset, "work_order_count": len(records), "history": records})
 
 
 # --- Tool schemas (sent to the API) ---------------------------------------
@@ -89,6 +110,20 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
                 }
             },
             "required": ["hazard"],
+        },
+    },
+    {
+        "name": "lookup_asset_history",
+        "description": (
+            "Look up the recent maintenance work-order history for an asset. "
+            "ALWAYS call this during diagnosis: if the same component or failure code "
+            "has failed before, the right answer is often a root-cause fix or PM, not "
+            "another like-for-like repair. Use it to set the work order's recurrence flag."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {"asset": {"type": "string", "description": "Asset tag, e.g. CONV-L3."}},
+            "required": ["asset"],
         },
     },
     {
@@ -135,20 +170,50 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
                     },
                 },
                 "estimated_downtime": {"type": "string"},
+                "cost_impact": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "labor_hours": {"type": "number"},
+                        "labor_cost_usd": {"type": "number"},
+                        "parts_cost_usd": {"type": "number"},
+                        "downtime_hours": {"type": "number"},
+                        "downtime_cost_usd": {"type": "number"},
+                        "total_cost_usd": {"type": "number"},
+                    },
+                    "required": [
+                        "labor_hours", "labor_cost_usd", "parts_cost_usd",
+                        "downtime_hours", "downtime_cost_usd", "total_cost_usd",
+                    ],
+                },
+                "recurrence": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "is_recurring": {"type": "boolean"},
+                        "note": {"type": ["string", "null"]},
+                    },
+                    "required": ["is_recurring", "note"],
+                },
                 "escalate": {"type": "boolean"},
                 "escalation_reason": {"type": ["string", "null"]},
             },
             "required": [
                 "asset", "reported_symptom", "severity", "probable_causes",
                 "safety_steps", "repair_steps", "required_parts",
-                "estimated_downtime", "escalate", "escalation_reason",
+                "estimated_downtime", "cost_impact", "recurrence",
+                "escalate", "escalation_reason",
             ],
         },
     },
 ]
 
 # Tools the agent may call and loop on (create_work_order is terminal, handled separately).
-LOOPING_TOOLS = {"lookup_part": lookup_part, "get_safety_procedure": get_safety_procedure}
+LOOPING_TOOLS = {
+    "lookup_part": lookup_part,
+    "get_safety_procedure": get_safety_procedure,
+    "lookup_asset_history": lookup_asset_history,
+}
 
 
 def run_looping_tool(name: str, tool_input: dict[str, Any]) -> str:

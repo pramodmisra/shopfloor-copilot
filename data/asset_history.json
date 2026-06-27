@@ -1,0 +1,14 @@
+{
+  "_comment": "Recent maintenance work-order history per asset. Lets the agent flag recurring failures (the thing a paper binder can't do). Illustrative for demo.",
+  "history": {
+    "CONV-L3": [
+      {"date": "2026-04-02", "wo": "WO-20260402-3318", "summary": "Replaced drive-pulley bearing BRG-6206-2RS; grinding at drive end.", "failure_code": "BEARING_FAILURE", "downtime_hours": 3.5},
+      {"date": "2026-05-14", "wo": "WO-20260514-7741", "summary": "Replaced drive-pulley bearing BRG-6206-2RS again; noise + heat at drive end.", "failure_code": "BEARING_FAILURE", "downtime_hours": 4.0},
+      {"date": "2026-05-29", "wo": "WO-20260529-1180", "summary": "Adjusted take-up, re-tensioned belt; minor mistracking.", "failure_code": "BELT_TRACKING", "downtime_hours": 0.75}
+    ],
+    "CONV-L1": [
+      {"date": "2026-03-11", "wo": "WO-20260311-5502", "summary": "Replaced belt scraper blade; carryback.", "failure_code": "WEAR", "downtime_hours": 0.5}
+    ],
+    "CONV-L2": []
+  }
+}

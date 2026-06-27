@@ -64,6 +64,23 @@
   .empty { color: var(--mut); text-align: center; padding: 40px 10px; }
   .esc { margin-top: 12px; background: rgba(90,169,255,.1); border: 1px solid var(--blue);
     border-radius: 8px; padding: 10px; font-size: 13px; }
+  .upload { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .upload input[type=file] { font-size: 12.5px; color: var(--mut); max-width: 100%; }
+  button.up { margin-top: 8px; background: var(--panel2); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 13px; cursor: pointer; }
+  button.up:hover { border-color: var(--blue); }
+  .recur { margin-top: 12px; background: rgba(255,93,93,.12); border: 1px solid var(--bad);
+    border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+  .costgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 13.5px; }
+  .costgrid .tot { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 6px;
+    font-weight: 700; color: var(--accent); }
+  .signoff { margin-top: 14px; background: var(--panel2); border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 12px; font-size: 12.5px; color: var(--mut); }
+  .cmms { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .cmms button { background: var(--ok); color: #0c1f17; border: 0; border-radius: 8px;
+    padding: 9px 13px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .cmms button.sec2 { background: var(--panel2); color: var(--ink); border: 1px solid var(--line); }
+  .toast { margin-top: 8px; color: var(--ok); font-size: 12.5px; }
 </style>
 </head>
 <body>
@@ -83,6 +100,12 @@
       <div class="chips" id="chips"><span class="muted">loading demo faults…</span></div>
       <button class="go" id="go">Diagnose &amp; build work order</button>
       <p class="muted" style="margin-top:10px">Asset: <strong>CONV-L3</strong> · ConvTech CT-2000 packaging conveyor</p>
+      <div class="upload">
+        <label>Use your own equipment manual</label>
+        <input type="file" id="pdf" accept="application/pdf" />
+        <button class="up" id="upbtn">Upload &amp; parse (LlamaParse)</button>
+        <p class="muted" id="manualSrc" style="margin-top:8px">Manual: seeded ConvTech CT-2000</p>
+      </div>
     </div>
 
     <div class="card" id="out">
@@ -126,9 +149,42 @@ goEl.onclick = async () => {
 };
 
 function esc(s){ return (s||"").replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+const usd = n => "$" + Number(n||0).toLocaleString("en-US", {maximumFractionDigits: 0});
+let lastCmms = null;
+
+// --- Upload your own manual (LlamaParse) ---
+$("#upbtn").onclick = async () => {
+  const f = $("#pdf").files[0];
+  if (!f) { $("#pdf").click(); return; }
+  const btn = $("#upbtn"); btn.disabled = true; btn.textContent = "Parsing with LlamaParse…";
+  try {
+    const fd = new FormData(); fd.append("file", f);
+    const r = await fetch("/api/upload_manual", { method: "POST", body: fd });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.detail || r.statusText);
+    $("#manualSrc").textContent = "Manual: " + j.manual_source + " (" + j.chars.toLocaleString() + " chars)";
+    $("#manualSrc").style.color = "var(--ok)";
+  } catch (e) {
+    $("#manualSrc").textContent = "Upload failed: " + e.message;
+    $("#manualSrc").style.color = "var(--bad)";
+  } finally { btn.disabled = false; btn.textContent = "Upload & parse (LlamaParse)"; }
+};
+
+function exportCmms() {
+  if (!lastCmms) return;
+  const blob = new Blob([JSON.stringify(lastCmms, null, 2)], {type: "application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = (lastCmms.workOrderNumber || "work-order") + ".cmms.json"; a.click();
+}
+function mockCreate() {
+  const t = document.getElementById("cmmsToast");
+  if (t) t.textContent = "✓ Created in Fiix as " + (lastCmms.workOrderNumber) + " — assigned to maintenance queue.";
+}
 
 function render(d) {
   const w = d.work_order;
+  lastCmms = d.cmms_payload;
+  const c = w.cost_impact;
   const causes = w.probable_causes.map(c =>
     `<div class="cause"><span class="conf conf-${c.confidence}">${c.confidence.toUpperCase()}</span>
      <strong> ${esc(c.cause)}</strong><div class="muted" style="margin-top:4px">${esc(c.evidence)}</div></div>`).join("");
@@ -145,15 +201,28 @@ function render(d) {
       <h2>Work Order <span class="muted">${esc(w.work_order_id)}</span></h2>
       <span class="badge sev-${w.severity}">${w.severity.toUpperCase()}</span>
       <span class="muted"> · ${esc(w.asset)} · est. downtime ${esc(w.estimated_downtime)}</span>
+      ${w.recurrence && w.recurrence.is_recurring ? `<div class="recur">🔁 <strong>Recurring failure:</strong> ${esc(w.recurrence.note||"")}</div>` : ""}
       <div class="sec"><h3>Reported symptom</h3><div>${esc(w.reported_symptom)}</div></div>
       <div class="sec"><h3>Probable root cause</h3>${causes}</div>
+      <div class="sec"><h3>💵 Cost impact</h3><div class="costgrid">
+        <div>Labor</div><div>${c.labor_hours} hr · ${usd(c.labor_cost_usd)}</div>
+        <div>Parts</div><div>${usd(c.parts_cost_usd)}</div>
+        <div>Downtime</div><div>${c.downtime_hours} hr · ${usd(c.downtime_cost_usd)}</div>
+        <div class="tot">Total exposure</div><div class="tot">${usd(c.total_cost_usd)}</div>
+      </div></div>
       <div class="sec"><h3>⚠️ Safety — lockout/tagout first</h3><ol class="safety">${steps(w.safety_steps)}</ol></div>
       <div class="sec"><h3>Repair steps</h3><ol>${steps(w.repair_steps)}</ol></div>
       <div class="sec"><h3>Required parts</h3><table>
         <tr><th>Part #</th><th>Description</th><th>Availability</th></tr>${parts}</table></div>
       ${w.escalate ? `<div class="esc"><strong>Escalate:</strong> ${esc(w.escalation_reason||"")}</div>` : ""}
+      <div class="signoff">🔒 ${esc(w.safety_provenance)}${w.requires_supervisor_signoff ? "<br><strong>Requires supervisor sign-off before work begins.</strong>" : ""}</div>
+      <div class="cmms">
+        <button onclick="mockCreate()">Create in Fiix CMMS</button>
+        <button class="sec2" onclick="exportCmms()">Export CMMS payload (JSON)</button>
+      </div>
+      <div class="toast" id="cmmsToast"></div>
       <details class="trace"><summary>Show agent reasoning (${d.trace.length} steps, ${d.model})</summary>${traceHtml}</details>
-      <div class="meta">Completed in ${d.elapsed_seconds}s · ${esc(d.model)}</div>
+      <div class="meta">Completed in ${d.elapsed_seconds}s · ${esc(d.model)} · manual: ${esc(d.manual_source)}</div>
     </div>`;
 }
 </script>

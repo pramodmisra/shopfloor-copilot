@@ -5,13 +5,15 @@ import time
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .agent import MODEL, run_agent
+from .cmms import to_cmms_payload
+from .llamaparse import ManualParseError, parse_pdf_to_markdown
 from .models import DiagnoseRequest, DiagnoseResponse
-from .tools import load_sample_faults
+from .tools import load_sample_faults, manual_source, set_manual_override
 
 load_dotenv()
 
@@ -38,10 +40,26 @@ def diagnose(req: DiagnoseRequest) -> DiagnoseResponse:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     return DiagnoseResponse(
         work_order=work_order,
+        cmms_payload=to_cmms_payload(work_order),
         trace=trace,
         model=MODEL,
+        manual_source=manual_source(),
         elapsed_seconds=round(time.monotonic() - started, 1),
     )
+
+
+@app.post("/api/upload_manual")
+async def upload_manual(file: UploadFile = File(...)) -> dict[str, object]:
+    """Parse an uploaded equipment-manual PDF (via LlamaParse) and make it the active manual."""
+    raw = await file.read()
+    if len(raw) > 20_000_000:
+        raise HTTPException(status_code=413, detail="Manual exceeds 20 MB.")
+    try:
+        markdown = parse_pdf_to_markdown(raw, file.filename or "manual.pdf")
+    except ManualParseError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    set_manual_override(markdown, f"Uploaded: {file.filename}")
+    return {"ok": True, "manual_source": manual_source(), "chars": len(markdown)}
 
 
 @app.get("/")

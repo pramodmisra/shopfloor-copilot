@@ -19,8 +19,8 @@ While it runs (button shows "Agent working… reading manual, checking parts & s
 *(Work-order card renders.)*
 > "Here's the work order. Severity **emergency** — it caught the burning smell. But look at the top: a **recurring-failure** flag. The agent checked this machine's history and found this bearing has failed three times in eight weeks — so it's telling me to stop swapping bearings and fix the *root cause*: shaft alignment. That's the thing a binder can never tell you."
 
-*(Point to the cost panel.)*
-> "And it dollarizes the impact: **$274,000 total exposure** — because the bearing is out of stock on a three-day lead, that's 72 hours of downtime. That number is the business case to stock the part and fix the alignment."
+*(Point to the cost panel — read whatever total it shows; it's typically six figures, $100K–$270K.)*
+> "And it dollarizes the impact: **six figures of exposure** — because the bearing is out of stock on a multi-day lead, that's days of downtime at $3,800/hr. That number is the business case to stock the part and fix the alignment."
 
 *(Scroll to safety + parts.)*
 > "Safety comes first — full lockout/tagout, and notice the note: these steps come from the facility's *approved* OSHA energy-control procedure, not invented by the AI, and the work order **requires supervisor sign-off**. Then the repair steps, then the exact parts with real availability."

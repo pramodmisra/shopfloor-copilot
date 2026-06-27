@@ -6,9 +6,10 @@
 <title>ShopFloor Copilot — Maintenance Work-Order Agent</title>
 <style>
   :root {
-    --bg: #0f1419; --panel: #1a2230; --panel2: #222c3c; --line: #2e3a4d;
-    --ink: #e7edf5; --mut: #93a1b5; --accent: #ff8a3d; --ok: #3ad29f;
-    --warn: #ffcc4d; --bad: #ff5d5d; --blue: #5aa9ff;
+    --bg: #f4f6fa; --panel: #ffffff; --panel2: #eef2f7; --line: #d7dee8;
+    --ink: #1b2330; --mut: #5d6b7e; --accent: #e8722e; --accent-ink: #ffffff;
+    --ok: #128a5a; --warn: #b5820a; --bad: #d23b3b; --blue: #2563eb;
+    --shadow: 0 1px 3px rgba(20,30,50,.08), 0 1px 2px rgba(20,30,50,.04);
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
@@ -21,7 +22,7 @@
   .wrap { max-width: 1080px; margin: 0 auto; padding: 24px; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
   @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; box-shadow: var(--shadow); }
   label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
     color: var(--mut); margin-bottom: 6px; }
   textarea { width: 100%; min-height: 96px; resize: vertical; background: var(--panel2);
@@ -30,7 +31,7 @@
   .chip { background: var(--panel2); border: 1px solid var(--line); color: var(--mut);
     border-radius: 999px; padding: 6px 12px; font-size: 12.5px; cursor: pointer; }
   .chip:hover { border-color: var(--accent); color: var(--ink); }
-  button.go { margin-top: 14px; width: 100%; background: var(--accent); color: #11161d;
+  button.go { margin-top: 14px; width: 100%; background: var(--accent); color: var(--accent-ink);
     border: 0; border-radius: 9px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; }
   button.go:disabled { opacity: .55; cursor: progress; }
   .muted { color: var(--mut); font-size: 13px; }
@@ -77,10 +78,47 @@
   .signoff { margin-top: 14px; background: var(--panel2); border: 1px solid var(--line);
     border-radius: 8px; padding: 10px 12px; font-size: 12.5px; color: var(--mut); }
   .cmms { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .cmms button { background: var(--ok); color: #0c1f17; border: 0; border-radius: 8px;
+  .cmms button { background: var(--ok); color: #ffffff; border: 0; border-radius: 8px;
     padding: 9px 13px; font-size: 13px; font-weight: 700; cursor: pointer; }
   .cmms button.sec2 { background: var(--panel2); color: var(--ink); border: 1px solid var(--line); }
   .toast { margin-top: 8px; color: var(--ok); font-size: 12.5px; }
+
+  /* --- Copi hero band --- */
+  .hero { max-width: 1080px; margin: 22px auto 0; padding: 0 24px; }
+  .hero-inner { background: linear-gradient(135deg, #fff 0%, #fdf3ec 100%);
+    border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; box-shadow: var(--shadow); }
+  .hero .tag { font-size: 13.5px; color: var(--mut); margin: 0 0 16px; }
+  .hero .tag b { color: var(--accent); }
+  .flow { display: flex; align-items: center; gap: 14px; }
+  @media (max-width: 760px) { .flow { flex-direction: column; align-items: stretch; } }
+  .beat { flex: 1; min-width: 0; }
+  .beat.who { display: flex; align-items: flex-start; gap: 10px; }
+  .face { font-size: 30px; line-height: 1; flex-shrink: 0; }
+  .mascot { width: 58px; height: 58px; flex-shrink: 0; }
+  .bubble { position: relative; background: var(--panel2); border: 1px solid var(--line);
+    border-radius: 12px; padding: 10px 13px; font-size: 13.5px; color: var(--ink); }
+  .bubble.op { background: #eef4ff; border-color: #cfe0ff; }
+  .bubble.copi { background: #fff4ec; border-color: #f3d4bd; }
+  .bubble b { color: var(--accent); }
+  .flow-arrow { color: var(--accent); font-size: 22px; flex-shrink: 0; align-self: center; }
+  @media (max-width: 760px) { .flow-arrow { transform: rotate(90deg); align-self: center; } }
+  .outcome { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .outcome .ohead { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--mut); }
+  .outcome .obig { font-weight: 800; color: var(--bad); font-size: 15px; margin: 3px 0; }
+  .outcome .osub { font-size: 12.5px; color: var(--mut); }
+  .copi-name { font-size: 11px; color: var(--accent); font-weight: 700; text-align: center; margin-top: 2px; }
+  .copi-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+
+  /* --- Annotated sample preview (empty state) --- */
+  .preview { padding: 4px; }
+  .preview .ptitle { font-size: 13px; color: var(--mut); margin-bottom: 12px; }
+  .pcard { border: 1px dashed var(--line); border-radius: 10px; padding: 14px; background: var(--panel2); }
+  .prow { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
+  .prow:last-child { border-bottom: 0; }
+  .prow .pico { font-size: 18px; width: 26px; text-align: center; flex-shrink: 0; }
+  .prow .ptext { font-size: 13px; }
+  .prow .ptext b { display: block; color: var(--ink); }
+  .prow .ptext span { color: var(--mut); font-size: 12px; }
 </style>
 </head>
 <body>
@@ -91,6 +129,42 @@
     <p>Plain-language fault → diagnosed, safety-compliant maintenance work order</p>
   </div>
 </header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="tag">Meet <b>Copi</b> — your shop-floor sidekick. He reads the manual so your operators don't have to.</p>
+    <div class="flow">
+      <div class="beat who">
+        <span class="face">👷</span>
+        <div class="bubble op">"It's making the bad noise again 😩"</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="beat who">
+        <div class="copi-wrap">
+          <svg class="mascot" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect x="14" y="30" width="36" height="26" rx="9" fill="#ffffff" stroke="#1b2330" stroke-width="2.5"/>
+            <circle cx="26" cy="40" r="3.4" fill="#2563eb"/>
+            <circle cx="38" cy="40" r="3.4" fill="#2563eb"/>
+            <path d="M26 47 q6 5 12 0" stroke="#1b2330" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+            <rect x="10" y="25" width="44" height="6" rx="3" fill="#e8722e"/>
+            <path d="M19 26 a13 13 0 0 1 26 0 z" fill="#e8722e"/>
+            <rect x="30.5" y="13" width="3" height="13" rx="1.5" fill="#c95f1c"/>
+          </svg>
+          <span class="copi-name">COPI</span>
+        </div>
+        <div class="bubble copi">On it — reading the manual, checking history… you've swapped this bearing <b>3× in 8 weeks</b>. That's not the bearing's fault.</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="beat">
+        <div class="outcome">
+          <div class="ohead">Work order · ~20s</div>
+          <div class="obig">🚨 EMERGENCY · $100K+ exposure</div>
+          <div class="osub">root-cause fix · parts · OSHA LOTO · one-click to Fiix</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <div class="wrap">
   <div class="grid">
@@ -109,7 +183,16 @@
     </div>
 
     <div class="card" id="out">
-      <div class="empty">The work order appears here.<br>Pick a demo fault or type your own, then hit Diagnose.</div>
+      <div class="preview">
+        <div class="ptitle">📋 What Copi hands your technician — pick a demo fault or type your own, then <b>Diagnose</b>:</div>
+        <div class="pcard">
+          <div class="prow"><span class="pico">🔁</span><div class="ptext"><b>Recurring-failure flag</b><span>"3rd bearing in 8 weeks → fix the root cause, not another swap"</span></div></div>
+          <div class="prow"><span class="pico">💵</span><div class="ptext"><b>Dollar impact</b><span>labor + parts + downtime — e.g. $274K total exposure</span></div></div>
+          <div class="prow"><span class="pico">🔒</span><div class="ptext"><b>OSHA safety, first</b><span>lockout/tagout steps + supervisor sign-off required</span></div></div>
+          <div class="prow"><span class="pico">🔧</span><div class="ptext"><b>Parts with real availability</b><span>stock + lead time from your MRO catalog</span></div></div>
+          <div class="prow"><span class="pico">🏭</span><div class="ptext"><b>One-click to your CMMS</b><span>Fiix / UpKeep-ready — no re-keying</span></div></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

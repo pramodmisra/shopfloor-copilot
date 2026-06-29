@@ -82,3 +82,44 @@ Built by **Pramod Misra** — Director of Data Analytics, Snellings Walters Insu
 - **Believable end-to-end workflow?** Plain-language fault → history check → manual diagnosis → parts → safety → costed work order → one-click to the CMMS.
 - **Is the value immediately understandable?** A 30-minute triage becomes ~20 seconds, and the screen shows severity, root cause, dollar exposure, and the fix.
 - **Would you show it to an ops manager on Monday?** Yes — LOTO-first safety from the approved procedure, supervisor sign-off, real parts availability, CMMS-ready output, a live URL, and it ingests your own equipment manual.
+
+---
+
+## YouTube upload (for the demo video `ShopFloor_Copilot_90s.mp4`)
+
+**Title:** ShopFloor Copilot — AI Maintenance Work-Order Agent (90s demo)
+
+**Description:**
+```
+A frontline operator describes a machine fault in plain language — and ShopFloor Copilot returns a complete, safety-compliant, costed maintenance work order in about 20 seconds.
+
+It reads the equipment manual, checks the machine's repair history (and flags recurring failures a paper binder never would), confirms spare-parts availability, pulls the matching OSHA lockout/tagout steps, dollarizes the downtime impact, and hands the technician a CMMS-ready work order — one click to Fiix/UpKeep, with supervisor sign-off required.
+
+Built for the Zapdos Labs Industrial AI Hackathon (Operational Intelligence).
+
+▶ Try it live: https://shopfloor-copilot-production.up.railway.app
+▶ Code: https://github.com/pramodmisra/shopfloor-copilot
+
+How it works
+• Anthropic Claude (claude-sonnet-4-6) agentic tool-use loop — 4 tools, strict structured output
+• FastAPI single service, deployed on Railway
+• LlamaParse to ingest your own equipment manual (PDF)
+• Safety steps sourced from the approved OSHA 29 CFR 1910.147 procedure — not invented by the AI
+
+Chapters
+0:00  The problem: unplanned downtime
+0:14  What it actually costs
+0:26  Meet ShopFloor Copilot
+0:38  Live demo — fault → diagnosis → safe work order
+1:21  Try it live
+
+#IndustrialAI #Manufacturing #AIagents #PredictiveMaintenance #CMMS #FactoryFloor #OperationalIntelligence
+```
+Set visibility to **Unlisted** (or Public). Nudge chapter times ±1–2s to match the final upload.
+
+---
+
+## Local asset locations (all in `C:\Users\Pramod Misra\`)
+- `ShopFloor_Copilot_90s.mp4` — 90s explainer (problem → impact → solution → demo → CTA, music + subtitles)
+- `shopfloor_thumbnail.png` — 1200×800 Devpost thumbnail
+- `shopfloor-light-hero.png` · `shopfloor-result.png` — gallery screenshots
